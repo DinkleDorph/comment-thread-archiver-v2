@@ -1,0 +1,15 @@
+{% extends "base.twig" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+  <h1>Welcome!</h1>
+  <p>This is a simple application to archive comment threads from screenshots.</p>
+  <h2>Endpoints</h2>
+  <ul>
+    <li><a href="/image">/image</a> - Upload images in order.</li>
+  </ul>
+  <h2>Environment</h2>
+  <p>Current environment: {% if ENV is not empty %}{{ ENV }}{% else %}Not set{% endif %}</p>
+  <p>OpenAI API Key: {% if OPENAI_API_KEY_SET %}Set{% else %}Not set{% endif %}</p>
+{% endblock %}
