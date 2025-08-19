@@ -4,7 +4,7 @@ FROM ubuntu:24.04
 RUN apt update && apt install -y \
     apache2 libapache2-mod-php \
     php8.3-xml php-curl php-mbstring php-zip php-bcmath php-json php-tokenizer \
-    curl php-cli unzip nano vim && \
+    curl php-cli php-mysql unzip nano vim && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
