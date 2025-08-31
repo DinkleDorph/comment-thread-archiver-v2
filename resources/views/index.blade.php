@@ -7,7 +7,8 @@
   <p>This is a simple application to archive comment threads from screenshots.</p>
   <h2>Endpoints</h2>
   <ul>
-    <li><a href="/">/</a> - Home page (this page)</li>
+    <li><a href="/">/</a> - Index page (this page)</li>
+    <li><a href="/home">/home</a> - Home page</li>
     <li><a href="/image">/image</a> - Upload images in order</li>
   </ul>
   <h2>Environment</h2>

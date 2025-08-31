@@ -11,6 +11,13 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/home', function () {
+    return view('home', [
+        'APP_ENV' => $_ENV['APP_ENV'],
+        'OPENAI_API_KEY_SET' => true,
+    ]);
+});
+
 Route::get('/image', function () {
     $prompt = file_get_contents(__DIR__ . '/../resources/Prompt.md');
     $images = glob(__DIR__ . '/../resources/images/*.png');

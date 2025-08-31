@@ -8,6 +8,11 @@ RUN apt update && apt install -y \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
+# Install Node
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install
+
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
@@ -20,9 +25,6 @@ RUN mkdir -p /var/www/html/public && \
 # Copy custom Apache config
 COPY custom-apache.conf /etc/apache2/conf-available/custom-apache.conf
 RUN a2enconf custom-apache
-
-# Start Apache in foreground
-# CMD ["bash", "-c", "exec apache2ctl -D FOREGROUND"]
 
 # Change file permissions to allow host machine to edit files in development
 COPY entrypoint.sh /usr/local/bin/

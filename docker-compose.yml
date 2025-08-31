@@ -4,6 +4,7 @@ services:
     build: .
     ports:
       - "8080:80"
+      - "5173:5173" # For Vite
     volumes:
       - .:/var/www/html:z
     depends_on:
