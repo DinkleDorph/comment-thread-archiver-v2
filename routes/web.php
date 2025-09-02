@@ -2,21 +2,34 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('index', [
-        'APP_ENV' => $_ENV['APP_ENV'],
-        'OPENAI_API_KEY_SET' => true,
-    ]);
+Route::get('/set-api-key', function () {
+    if (session('api_key')) {
+        return redirect('/')->with('info', 'API key already set.');
+    }
+
+    return view('set-api-key');
 });
 
-Route::get('/home', function () {
-    return view('home', [
-        'APP_ENV' => $_ENV['APP_ENV'],
-        'OPENAI_API_KEY_SET' => true,
+Route::post('/set-api-key', function (Request $request) {
+    $request->validate([
+        'api_key' => 'required|string',
     ]);
+    $request->session()->put('api_key', $request->input('api_key'));
+    $request->session()->put('expires_at', now()->addDays(30));
+
+    return redirect('/')->with('success', 'API key set successfully.');
 });
+
+Route::get('/unset-api-key', function () {
+    session()->flush();
+
+    return redirect('/set-api-key')->with('success', 'API key unset successfully.');
+});
+
+Route::view('/', 'index')->middleware('session.api_key');
 
 Route::get('/image', function () {
     $prompt = file_get_contents(__DIR__ . '/../resources/Prompt.md');
@@ -76,7 +89,7 @@ Route::get('/image', function () {
     echo "<pre>";
     print_r($responseData['output'][0]['content'][0]['text']);
     echo "</pre>";
-});
+})->middleware('session.api_key');
 
 function sendOpenAiRequest(
     array $content,
