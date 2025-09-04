@@ -1,7 +1,13 @@
-version: '3.8'
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # For fixing file permissions so I can edit files on host machine that were created with Artisan
+      args:
+        # Pass the host user and group IDs as build arguments
+        - UID=${UID:-1000} # Uses the environment variable UID, or defaults to 1000
+        - GID=${GID:-1000} # Uses the environment variable GID, or defaults to 1000
     ports:
       - "8080:80"
       - "5173:5173" # For Vite

@@ -10,8 +10,7 @@ RUN apt update && apt install -y \
 
 # Install Node
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install
+    apt-get install -y nodejs
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -30,5 +29,24 @@ RUN a2enconf custom-apache
 COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
+
+# Create new user with matching UID to host machine, so host user can edit
+# files created by the container user (for example, files created by artisan)
+
+# Accept the arguments from command line
+ARG UID
+ARG GID
+
+RUN echo "The GID being used is: ${GID}"
+
+# Create a new group with the host's GID
+RUN groupadd -g ${GID} --non-unique developer
+
+# Create a new user with the host's UID and GID
+# Also add this user to the www-data group to ensure it can interact with web server files
+RUN useradd -u ${UID} --non-unique -g developer -G www-data -m developer
+
+# Set the working directory
+WORKDIR /var/www/html
 
 EXPOSE 8080
