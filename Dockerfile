@@ -25,26 +25,23 @@ RUN mkdir -p /var/www/html/public && \
 COPY custom-apache.conf /etc/apache2/conf-available/custom-apache.conf
 RUN a2enconf custom-apache
 
-# Change file permissions to allow host machine to edit files in development
-COPY entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
-
-# Create new user with matching UID to host machine, so host user can edit
-# files created by the container user (for example, files created by artisan)
-
+# Set up shared group approach for file permissions
 # Accept the arguments from command line
 ARG UID
 ARG GID
 
-RUN echo "The GID being used is: ${GID}"
+RUN echo "Setting up shared group with GID: ${GID}"
 
-# Create a new group with the host's GID
-RUN groupadd -g ${GID} --non-unique developer
+# Create a shared group with the host's GID
+RUN groupadd -g ${GID} --non-unique shared
 
-# Create a new user with the host's UID and GID
-# Also add this user to the www-data group to ensure it can interact with web server files
-RUN useradd -u ${UID} --non-unique -g developer -G www-data -m developer
+# Add www-data user to the shared group
+RUN usermod -a -G shared www-data
+
+# Copy and set up entrypoint
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
 
 # Set the working directory
 WORKDIR /var/www/html

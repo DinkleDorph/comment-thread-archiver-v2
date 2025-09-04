@@ -1,22 +1,29 @@
 #!/bin/bash
 
-# Add www-data user to the developer group so both users can access files
-usermod -a -G developer www-data
+# Set up shared group permissions for file access
+# This allows both www-data and host user to read/write files
 
-# Set ownership to www-data user but developer group
-# This allows both www-data (for Apache) and developer user (host editing) to access files
-chown -R www-data:developer /var/www/html
+# Set group ownership to 'shared' group (which both www-data and host user belong to)
+chgrp -R shared /var/www/html
 
-# Set permissions so both www-data and developer users can read/write
-# 775 for directories (rwxrwxr-x), 664 for files (rw-rw-r--)
+# Set permissions: 775 for directories, 664 for files
+# This allows group members (www-data and host user) to read/write
 find /var/www/html -type d -exec chmod 775 {} \;
 find /var/www/html -type f -exec chmod 664 {} \;
 
-# Ensure storage and bootstrap/cache directories are writable by both users
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
+# Ensure required directories exist
+mkdir -p /var/www/html/storage/logs
+mkdir -p /var/www/html/bootstrap/cache
 
-# Make artisan executable for both users
-chmod 775 /var/www/html/artisan 2>/dev/null || true
+# Set proper permissions for Laravel directories
+chmod -R 775 /var/www/html/storage
+chmod -R 775 /var/www/html/bootstrap/cache
+
+# Make executable files executable
+chmod +x /var/www/html/artisan 2>/dev/null || true
+if [ -d "/var/www/html/node_modules/.bin" ]; then
+    find /var/www/html/node_modules/.bin -type f -exec chmod +x {} \;
+fi
 
 # Start Apache
 exec apache2ctl -D FOREGROUND

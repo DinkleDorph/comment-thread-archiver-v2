@@ -1,0 +1,12 @@
+services:
+  web:
+    ports:
+      - "80:80"  # Standard HTTP port for production
+    environment:
+      - DB_HOST=db
+      - DB_DATABASE=laravel_app
+      - DB_USERNAME=laravel_user
+      - DB_PASSWORD=laravel_password
+      # Add production-specific environment variables here
+      - APP_ENV=production
+      - APP_DEBUG=false
